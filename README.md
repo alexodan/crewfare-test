@@ -1,54 +1,170 @@
-# React + TypeScript + Vite
+# Rooming List Management App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A demo hotel booking and rooming list management application built with Next.js, PostgreSQL, and Docker.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📋 **Rooming List Management**
+- 🔍 **Search & Filtering**
+- 📄 **Pagination**
+- 📱 **Responsive Design**
+- 🐳 **Docker Support**
+- 🗄️ **PostgreSQL Database**
 
-## Expanding the ESLint configuration
+## Quick Start with Docker
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Docker and Docker Compose installed on your system
+- Git (to clone the repository)
+
+### Recommended Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/alexodan/crewfare-test.git
+   cd crewfare-test
+   ```
+
+2. **Run the setup script**
+   ```bash
+   chmod +x scripts/docker-setup.sh
+   ./scripts/docker-setup.sh
+   ```
+
+3. **Access the application**
+   - Application: http://localhost:3000
+   - pgAdmin: http://localhost:5050 (admin@example.com / admin123)
+
+### Manual Docker Setup
+
+If you prefer to run commands manually:
+
+```bash
+docker-compose up --build -d
+
+docker-compose logs -f
+
+docker-compose down
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Development Setup (Without Docker)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+- Node.js 18+ installed
+- PostgreSQL database running
+
+### Setup
+
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your database connection details
+   ```
+
+3. **Set up the database**
+   ```bash
+   # Run the SQL scripts in the scripts/ directory
+   psql -U your_user -d your_database -f scripts/01-create-tables.sql
+   psql -U your_user -d your_database -f scripts/02-seed-data.sql
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+## Project Structure
+
 ```
+├── app/                    # Next.js App Router pages and API routes
+├── components/             # Reusable React components
+├── contexts/              # React Context providers
+├── lib/                   # Utility functions and types
+├── scripts/               # Database setup scripts
+├── docker-compose.yml     # Docker services configuration
+├── Dockerfile            # Application container configuration
+└── README.md
+```
+
+## Database Schema
+
+### Tables
+
+- **events**: Store event information
+- **rooming_lists**: Store rooming list details linked to events
+- **bookings**: Store individual booking details linked to rooming lists
+
+### Key Relationships
+
+- Events → Rooming Lists (1:many)
+- Rooming Lists → Bookings (1:many)
+
+## API Endpoints
+
+- `GET /api/rooming-lists` - Fetch all rooming lists
+- `GET /api/bookings/[roomingListId]` - Fetch bookings for a specific rooming list
+
+## Docker Services
+
+### Application (app)
+- **Port**: 3000
+- **Description**: Next.js application server
+
+### Database (postgres)
+- **Port**: 5432
+- **Description**: PostgreSQL database server
+- **Credentials**: postgres/password123
+
+### pgAdmin (pgadmin)
+- **Port**: 5050
+- **Description**: Database administration interface
+- **Credentials**: admin@example.com/admin123
+
+## Useful Docker Commands
+
+```bash
+# View service logs
+docker-compose logs -f [service-name]
+
+# Access database shell
+docker-compose exec postgres psql -U postgres -d rooming_list_db
+
+# Restart specific service
+docker-compose restart [service-name]
+
+# View running containers
+docker-compose ps
+
+# Stop all services
+docker-compose down
+
+# Remove all containers and volumes
+docker-compose down -v
+```
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:password123@postgres:5432/rooming_list_db` |
+| `NEXT_PUBLIC_APP_URL` | Application URL | `http://localhost:3000` |
+| `NODE_ENV` | Environment mode | `production` |
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test with Docker setup
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
